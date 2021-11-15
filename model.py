@@ -8,6 +8,7 @@ Brown University
 import tensorflow as tf
 from tensorflow.keras.layers import \
 	Conv2D, MaxPool2D, Dropout, Flatten, Dense
+    
 class DeepFakeModel(tf.keras.Model):
     '''
     hyperparameters here
