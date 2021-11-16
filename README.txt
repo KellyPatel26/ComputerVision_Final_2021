@@ -8,3 +8,6 @@ This python script goes through the videos and does the following
     - If the video is horizontal, we pad the bottom
     - If the video is vertical, we pad the right
 3. Sorts them into REAL and FAKE folders
+
+The processed training data can be found here:
+https://drive.google.com/drive/folders/1C7uQ_l2ugXKNmjicrPGedYIChzw1vdaA?usp=sharing 
