@@ -1,13 +1,12 @@
-This is the repository for our final project for CSCI 1430. We will be attempting deepfake face detection.
+# Final project for CSCI 1430. 
+This is deepfake classification model
 
-Videos.py
-------------------------------------------------------------------
-This python script goes through the videos and does the following
-1. Extract 10 frames from each videos
-2. Resize them all to be of 224x224x3 dimensions
-    - If the video is horizontal, we pad the bottom
-    - If the video is vertical, we pad the right
-3. Sorts them into REAL and FAKE folders
+## My Environment
+- Python:
+  - python 3.7.2
+- Tensorflow:
+  - tensorflow-2.5.0
 
-The processed training data can be found here:
-https://drive.google.com/drive/folders/1C7uQ_l2ugXKNmjicrPGedYIChzw1vdaA?usp=sharing 
+## Downloading the Preprocessed Kaggle Deepfake Detection Dataset
+[Preprocessed Kaggle Deepfake Detection Challenge](https://drive.google.com/drive/u/2/folders/1C7uQ_l2ugXKNmjicrPGedYIChzw1vdaA)
+[Original Kaggle Deepfake Detection Challenge](https://www.kaggle.com/c/deepfake-detection-challenge/data)
