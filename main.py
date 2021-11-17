@@ -102,6 +102,7 @@ def main():
     if args.load_checkpoint:
         assert os.path.split(args.load_checkpoint)[0]==checkpoint_path
         model.load_weights(args.load_checkpoint)
+        init_epoch = int(os.path.split(args.load_checkpoint)[-1].split("-")[0])
     
     # compile model graph
     model.compile(
