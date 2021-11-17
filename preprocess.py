@@ -84,7 +84,6 @@ class KaggleTrainBalanceGenerator(Sequence):
         if self.shuffle == True:
             np.random.shuffle(self.real_idxs)
             np.random.shuffle(self.fake_idxs)
-            print(self.fake_idxs)
 
     def __data_generation(self, real_idxs, fake_idxs):
         # load dataset
@@ -125,7 +124,7 @@ class KaggleTestGenerator(Sequence):
 
     def load_ids(self, path, total_frames):
         # get paths of files
-        paths = glob.glob(os.path.join(path, '*', '*', '*.jpg'))
+        paths = glob.glob(os.path.join(path, '*', '*.jpg'))
         paths = np.array(sorted(paths)).reshape(-1, total_frames)
         idxs = np.arange(len(paths))
         return paths, idxs
@@ -146,7 +145,17 @@ class KaggleTestGenerator(Sequence):
 if __name__=="__main__":
     data_generator = KaggleTrainBalanceGenerator(path="./dataset/train/", batch=30, shuffle=True)
     data_generator.on_epoch_begin()
-    data_generator.on_epoch_begin()
-    #for xs, ys in data_generator:
+    for xs, ys in data_generator:
         #print(xs)
-        #print(ys)
+        print(ys)
+
+    data_generator = KaggleTrainGenerator(path="./dataset/val/", batch=30, shuffle=True)
+    data_generator.on_epoch_begin()
+    for xs, ys in data_generator:
+        #print(xs)
+        print(ys)
+
+    data_generator = KaggleTestGenerator(path="./dataset/test/", batch=30, shuffle=True)
+    data_generator.on_epoch_begin()
+    for xs in data_generator:
+        print(xs)
