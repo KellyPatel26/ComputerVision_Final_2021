@@ -4,19 +4,31 @@ Deepfake Classification Model
 CS1430 - Computer Vision
 Brown University
 """
-
 import tensorflow as tf
-from tensorflow.keras.layers import \
-	Conv2D, MaxPool2D, Dropout, Flatten, Dense
+from tensorflow.keras import Model, optimizers, losses, Sequential
+from module import LSTMBlock, Classifier
     
-class DeepFakeModel(tf.keras.Model):
-    '''
-    hyperparameters here
-    '''
-    def __init__(self):
-        super(DeepFakeModel, self).__init__()
+class LSTMDeepFakeModel(Model):
+
+    def __init__(self, args):
+        super(LSTMDeepFakeModel, self).__init__()
     
-        # optimizer:
+        # optimizer
+        self.optimizer = optimizers.Adam(learning_rate=args.lr)
 
         # architexture
-        self.architecture = []
+        self.architecture = Sequential([
+            LSTMBlock(name="block1"),
+            Classifier(name="classifier")
+        ])
+    
+    def call(self, x):
+        # x: (batch, frames, height, width, color-channel)
+        x = self.architecture(x)
+        return x
+
+    @staticmethod
+    def loss_fn(labels, predictions):
+        # labels: (batch, 1)
+        # predictions: (batch, 2)
+        return losses.SparseCategoricalCrossentropy(from_logits=False)(labels, predictions)
