@@ -10,3 +10,16 @@ This is deepfake classification model
 ## Downloading the Preprocessed Kaggle Deepfake Detection Dataset
 [Preprocessed Kaggle Deepfake Detection Challenge](https://drive.google.com/drive/u/2/folders/1C7uQ_l2ugXKNmjicrPGedYIChzw1vdaA) \
 [Original Kaggle Deepfake Detection Challenge](https://www.kaggle.com/c/deepfake-detection-challenge/data)
+
+## For training
+```
+python main.py
+```
+## Continuing training
+```
+python main.py --load_checkpoint ./checkpoints/{type}/{timestamp}/{hdf5 file}
+```
+## For testing
+```
+python main.py --phase test --load_checkpoint ./checkpoints/{type}/{timestamp}/{hdf5 file}
+```
