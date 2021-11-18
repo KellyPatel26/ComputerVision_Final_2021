@@ -9,11 +9,33 @@ class LSTMBlock(layers.Layer):
         super(LSTMBlock, self).__init__()
         self.model = Sequential([
             layers.ConvLSTM2D(filters=64,
-                              kernel_size=(3, 3),
-                              strides=(16, 16),
+                              kernel_size=(5, 5),
                               padding="same",
-                              return_sequences=False,
-                              activation=None),
+                              strides=(1, 1), 
+                              return_sequences=True,
+                              activation='relu', 
+                              name="{}_LSTM1".format(name)),
+            layers.BatchNormalization(name="{}_BN1".format(name)),
+            layers.ConvLSTM2D(filters=64,
+                              kernel_size=(3, 3),
+                              strides=(1, 1),
+                              padding="same",
+                              return_sequences=True,
+                              activation="relu",
+                              name="{}_LSTM2".format(name)),
+            layers.BatchNormalization(name="{}_BN2".format(name)),
+            layers.ConvLSTM2D(filters=64,
+                              kernel_size=(1, 1),
+                              strides=(2, 2),
+                              padding="same",
+                              return_sequences=True,
+                              activation="relu",
+                              name="{}_LSTM3".format(name)),
+            layers.Conv3D(filters=1, 
+                          kernel_size=(3, 3, 3), 
+                          activation="relu", 
+                          padding="same",
+                          name="{}_Conv3D1".format(name))
             ], name="{}_LSTMBlock".format(name))
 
     def call(self, x):
@@ -27,10 +49,10 @@ class Classifier(layers.Layer):
         super(Classifier, self).__init__()
         self.model = Sequential([
             layers.Flatten(),
-            layers.Dense(units=256, name="{}_Dense1".format(name), activation='relu'), 
+            layers.Dense(units=512, name="{}_Dense1".format(name), activation='relu'), 
             layers.Dropout(rate=0.0),
-            layers.Dense(units=2, name="{}_Dense2".format(name), activation='softmax'),
-        ], name="{}_Classifier".format(name))
+            layers.Dense(units=1, name="{}_Dense2".format(name), activation='sigmoid'),
+        ], name=name)
     
     def call(self, x):
         x = self.model(x)

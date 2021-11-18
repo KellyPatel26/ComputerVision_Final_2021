@@ -18,6 +18,7 @@ class KaggleTrainGenerator(Sequence):
     def __len__(self):
         # number of iteration for one epoch
         # drop the last batch if non-divisible 
+        self.on_epoch_begin()
         return np.floor(len(self.paths)/self.batch).astype(int)
 
     def __getitem__(self, idx):
@@ -40,11 +41,13 @@ class KaggleTrainGenerator(Sequence):
     def __data_generation(self, idxs):
         # load dataset
         xs = np.zeros((self.batch, len(self.sample_frames), self.h, self.w, 3))
-        ys = np.zeros((self.batch, 1))
+        #ys = np.zeros((self.batch, 1))
+        ys = np.zeros((self.batch))
         for i, video in enumerate(self.paths[idxs]):
             for j, frame in enumerate(video[self.sample_frames]):
-                xs[i, j, :] = Image.open(frame)
-            ys[i, 0] = 0 if "FAKE" in video[self.sample_frames][0] else 1
+                xs[i, j, :] = np.array(Image.open(frame), dtype=np.float32)/255.0
+            #ys[i, 0] = 1 if "FAKE" in video[self.sample_frames][0] else 0
+            ys[i] = 1 if "FAKE" in video[self.sample_frames][0] else 0
         return xs, ys
 
 
@@ -63,7 +66,8 @@ class KaggleTrainBalanceGenerator(Sequence):
 
     def __len__(self):
         # number of iteration for one epoch
-        # drop the last batch if non-divisible 
+        # drop the last batch if non-divisible
+        self.on_epoch_begin()
         return np.floor(min(len(self.real_paths), len(self.fake_paths))/self.batch).astype(int)
 
     def __getitem__(self, idx):
@@ -88,16 +92,18 @@ class KaggleTrainBalanceGenerator(Sequence):
     def __data_generation(self, real_idxs, fake_idxs):
         # load dataset
         xs = np.zeros((self.batch, len(self.sample_frames), self.h, self.w, 3))
-        ys = np.zeros((self.batch, 1))
+        #ys = np.ones((self.batch, 1))
+        ys = np.ones((self.batch))
         for i, video in enumerate(self.fake_paths[fake_idxs]):
             for j, frame in enumerate(video[self.sample_frames]):
-                xs[i, j, :] = Image.open(frame)
+                xs[i, j, :] = np.array(Image.open(frame), dtype=np.float32)/255.0
             #ys[i, 0] = 0
 
         for i, video in enumerate(self.real_paths[real_idxs]):
             for j, frame in enumerate(video[self.sample_frames]):
-                xs[i+self.batch//2, j, :] = Image.open(frame)
-            ys[i+self.batch//2, 0] = 1
+                xs[i+self.batch//2, j, :] = np.array(Image.open(frame), dtype=np.float32)/255.0
+            #ys[i+self.batch//2, 0] = 0
+            ys[i+self.batch//2] = 0
         return xs, ys
 
 
@@ -114,6 +120,7 @@ class KaggleTestGenerator(Sequence):
     def __len__(self):
         # number of iteration for one epoch
         # drop the last batch if non-divisible 
+        self.on_epoch_begin()
         return np.floor(len(self.paths)/self.batch).astype(int)
 
     def __getitem__(self, idx):
@@ -138,24 +145,21 @@ class KaggleTestGenerator(Sequence):
         xs = np.zeros((self.batch, len(self.sample_frames), self.h, self.w, 3))
         for i, video in enumerate(self.paths[idxs]):
             for j, frame in enumerate(video[self.sample_frames]):
-                xs[i, j, :] = Image.open(frame)
+                xs[i, j, :] = np.array(Image.open(frame), dtype=np.float32)/255.0
         return xs
 
 
 if __name__=="__main__":
     data_generator = KaggleTrainBalanceGenerator(path="./dataset/train/", batch=30, shuffle=True)
-    data_generator.on_epoch_begin()
     for xs, ys in data_generator:
         #print(xs)
         print(ys)
 
     data_generator = KaggleTrainGenerator(path="./dataset/val/", batch=30, shuffle=True)
-    data_generator.on_epoch_begin()
     for xs, ys in data_generator:
         #print(xs)
         print(ys)
 
     data_generator = KaggleTestGenerator(path="./dataset/test/", batch=30, shuffle=True)
-    data_generator.on_epoch_begin()
     for xs in data_generator:
         print(xs)

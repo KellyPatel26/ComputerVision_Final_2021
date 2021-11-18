@@ -8,6 +8,7 @@ Usage:
 import os
 import argparse
 import datetime
+import numpy as np
 from tensorflow.keras import callbacks, Input
 from preprocess import KaggleTrainGenerator, KaggleTrainBalanceGenerator, KaggleTestGenerator
 from model import LSTMDeepFakeModel
@@ -16,8 +17,8 @@ parser = argparse.ArgumentParser(description='DeepFakeClassifier')
 parser.add_argument('--dataset_dir', dest='dataset_dir', default='./dataset/', help='path of the dataset')
 parser.add_argument('--type', dest='type', default='LSTM', help='LSTM')
 parser.add_argument('--phase', dest='phase', default='train', help='train or test')
-parser.add_argument('--lr', dest='lr', type=float, default=0.001, help='initial learning rate for adam')
-parser.add_argument('--batch_size', dest='batch_size', type=int, default=2, help='# of video for a batch')
+parser.add_argument('--lr', dest='lr', type=float, default=0.0001, help='initial learning rate for adam')
+parser.add_argument('--batch_size', dest='batch_size', type=int, default=8, help='# of video for a batch')
 parser.add_argument('--epoch', dest='epoch', type=int, default=1000, help='# epoch')
 parser.add_argument('--load_checkpoint', dest='load_checkpoint', default=None, help='load checkpoint')
 args = parser.parse_args()
@@ -48,12 +49,19 @@ def train(model, train_generator, val_generator, checkpoint_path, logs_path, ini
 
 
 def test(model, test_generator):
-    print("aaaaaa")
     # test on dataset with labels
     model.evaluate_generator(
         generator=test_generator,
         verbose=1,
     )
+    """
+    pred = model.predict_generator(
+        generator=test_generator, verbose=1,
+    )
+    print(np.array(pred).shape)
+    print(np.argmax(pred, -1))
+    print(np.unique(np.argmax(pred, -1)))
+    """
 
 
 def main():

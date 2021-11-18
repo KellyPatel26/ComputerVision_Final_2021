@@ -29,6 +29,6 @@ class LSTMDeepFakeModel(Model):
 
     @staticmethod
     def loss_fn(labels, predictions):
-        # labels: (batch, 1)
-        # predictions: (batch, 2)
-        return losses.SparseCategoricalCrossentropy(from_logits=False)(labels, predictions)
+        # labels: (batch)
+        # predictions: (batch, 1)
+        return losses.BinaryCrossentropy(from_logits=False)(labels, predictions)
