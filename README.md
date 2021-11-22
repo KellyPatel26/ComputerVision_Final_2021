@@ -11,15 +11,23 @@ This is deepfake classification model
 [Preprocessed Kaggle Deepfake Detection Challenge](https://drive.google.com/drive/u/2/folders/1C7uQ_l2ugXKNmjicrPGedYIChzw1vdaA) \
 [Original Kaggle Deepfake Detection Challenge](https://www.kaggle.com/c/deepfake-detection-challenge/data)
 
-## For training
+## For training CNN
 ```
 python main.py
 ```
+## For training LSTM
+```
+python main.py --type LSTM
+```
+## For training LSTM-F
+```
+python main.py --type LSTM-F --load_checkpoint ./checkpoints/{type}/{timestamp}/{CNN hdf5 file}
+```
 ## Continuing training
 ```
-python main.py --load_checkpoint ./checkpoints/{type}/{timestamp}/{hdf5 file}
+python main.py --type {type} --load_checkpoint ./checkpoints/{type}/{timestamp}/{hdf5 file}
 ```
 ## For testing
 ```
-python main.py --phase test --load_checkpoint ./checkpoints/{type}/{timestamp}/{hdf5 file}
+python main.py --type {type} --phase test --load_checkpoint ./checkpoints/{type}/{timestamp}/{hdf5 file}
 ```
