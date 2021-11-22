@@ -11,14 +11,16 @@ import datetime
 import numpy as np
 from tensorflow.keras import callbacks, Input
 from preprocess import KaggleTrainGenerator, KaggleTrainBalanceGenerator, KaggleTestGenerator
-from model import LSTMDeepFakeModel
+from model import LSTMDeepFakeModel, CNNDeepFakeModel
+
+#os.environ['CUDA_VISIBLE_DEVICES'] = ""
 
 parser = argparse.ArgumentParser(description='DeepFakeClassifier')
 parser.add_argument('--dataset_dir', dest='dataset_dir', default='./dataset/', help='path of the dataset')
-parser.add_argument('--type', dest='type', default='LSTM', help='LSTM')
+parser.add_argument('--type', dest='type', default='CNN', help='LSTM/CNN/LSTM-F')
 parser.add_argument('--phase', dest='phase', default='train', help='train or test')
 parser.add_argument('--lr', dest='lr', type=float, default=0.0001, help='initial learning rate for adam')
-parser.add_argument('--batch_size', dest='batch_size', type=int, default=8, help='# of video for a batch')
+parser.add_argument('--batch_size', dest='batch_size', type=int, default=2, help='# of video for a batch')
 parser.add_argument('--epoch', dest='epoch', type=int, default=1000, help='# epoch')
 parser.add_argument('--load_checkpoint', dest='load_checkpoint', default=None, help='load checkpoint')
 args = parser.parse_args()
@@ -35,7 +37,7 @@ def train(model, train_generator, val_generator, checkpoint_path, logs_path, ini
                                   monitor='val_accuracy',
                                   mode='max',
                                   save_best_only=True,
-                                  period=10)
+                                  period=1)
         ]
 
     # training
@@ -58,14 +60,10 @@ def test(model, test_generator):
     pred = model.predict_generator(
         generator=test_generator, verbose=1,
     )
-    print(np.array(pred).shape)
-    print(np.argmax(pred, -1))
-    print(np.unique(np.argmax(pred, -1)))
     """
 
 
 def main():
-    # change later
     init_epoch = 0
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M')
     
@@ -73,32 +71,77 @@ def main():
     if args.load_checkpoint and os.path.exists(args.load_checkpoint):
         timestamp = args.load_checkpoint.split(os.sep)[-2]
     
-    # some hyper-parameters related to dataset are here
-    sample = [0, 2, 4, 6, 8]
-    total_frames = 10
-    h, w = 224, 224
-    train_generator = KaggleTrainBalanceGenerator(path=os.path.join(args.dataset_dir, "train"), 
-                                                  batch=args.batch_size, 
-                                                  shuffle=True,
-                                                  sample_frames=sample,
-                                                  total_frames=total_frames,
-                                                  h=h,
-                                                  w=w)
-    val_generator = KaggleTrainGenerator(path=os.path.join(args.dataset_dir, "val"), 
-                                         batch=args.batch_size, 
-                                         shuffle=False,
-                                         sample_frames=sample,
-                                         total_frames=total_frames,
-                                         h=h,
-                                         w=w)
     save_dir = "./checkpoints/" 
     log_dir = "./logs/"
     # specify model
-    if args.type == 'LSTM':
-        model = LSTMDeepFakeModel(args)
-        model(Input(shape=(len(sample), 224, 224, 3)))
+    if args.type == 'CNN':
+        # some hyper-parameters related to dataset are here
+        sample = [0, 2, 4, 6, 8]
+        total_frames = 10
+        h, w = 450, 1800
+        train_generator = KaggleTrainBalanceGenerator(path=os.path.join(args.dataset_dir, "train"), 
+                                                      batch=args.batch_size, 
+                                                      shuffle=True,
+                                                      sample_frames=sample,
+                                                      total_frames=total_frames,
+                                                      h=h,
+                                                      w=w)
+        val_generator = KaggleTrainGenerator(path=os.path.join(args.dataset_dir, "val"), 
+                                             batch=args.batch_size, 
+                                             shuffle=False,
+                                             sample_frames=sample,
+                                             total_frames=total_frames,
+                                             h=h,
+                                             w=w)
+        model = CNNDeepFakeModel(args, h, w, len(sample))
+        model(Input(shape=(len(sample), h, w, 3)))
         model.summary()
-    
+    elif args.type == 'LSTM':
+        # some hyper-parameters related to dataset are here
+        sample = [0, 2, 4, 6, 8]
+        total_frames = 10
+        h, w = 450, 1800 #450, 1800
+        train_generator = KaggleTrainBalanceGenerator(path=os.path.join(args.dataset_dir, "train"), 
+                                                      batch=args.batch_size, 
+                                                      shuffle=True,
+                                                      sample_frames=sample,
+                                                      total_frames=total_frames,
+                                                      h=h,
+                                                      w=w)
+        val_generator = KaggleTrainGenerator(path=os.path.join(args.dataset_dir, "val"), 
+                                             batch=args.batch_size, 
+                                             shuffle=False,
+                                             sample_frames=sample,
+                                             total_frames=total_frames,
+                                             h=h,
+                                             w=w)
+        model = LSTMDeepFakeModel(args, h, w, len(sample))
+        model(Input(shape=(len(sample), h, w, 3)))
+        model.summary()
+    elif args.type == 'LSTM-F':
+        # some hyper-parameters related to dataset are here
+        sample = [0, 2, 4, 6, 8]
+        total_frames = 10
+        h, w = 450, 1800 #450, 1800
+        train_generator = KaggleTrainBalanceGenerator(path=os.path.join(args.dataset_dir, "train"), 
+                                                      batch=args.batch_size, 
+                                                      shuffle=True,
+                                                      sample_frames=sample,
+                                                      total_frames=total_frames,
+                                                      h=h,
+                                                      w=w)
+        val_generator = KaggleTrainGenerator(path=os.path.join(args.dataset_dir, "val"), 
+                                             batch=args.batch_size, 
+                                             shuffle=False,
+                                             sample_frames=sample,
+                                             total_frames=total_frames,
+                                             h=h,
+                                             w=w)
+        model = LSTMDeepFakeModel(args, h, w, len(sample), True)
+        model(Input(shape=(len(sample), h, w, 3)))
+        model.summary()
+
+
     checkpoint_path = os.path.join(save_dir, args.type, timestamp)
     logs_path = os.path.join(log_dir, args.type, timestamp)
     if not os.path.exists(checkpoint_path):
@@ -109,7 +152,7 @@ def main():
     # load checkpoints
     if args.load_checkpoint:
         assert os.path.split(args.load_checkpoint)[0]==checkpoint_path
-        model.load_weights(args.load_checkpoint)
+        model.load_weights(args.load_checkpoint, by_name=True, skip_mismatch=True)
         init_epoch = int(os.path.split(args.load_checkpoint)[-1].split("-")[0])
     
     # compile model graph

@@ -41,13 +41,17 @@ class KaggleTrainGenerator(Sequence):
     def __data_generation(self, idxs):
         # load dataset
         xs = np.zeros((self.batch, len(self.sample_frames), self.h, self.w, 3))
-        #ys = np.zeros((self.batch, 1))
         ys = np.zeros((self.batch))
         for i, video in enumerate(self.paths[idxs]):
             for j, frame in enumerate(video[self.sample_frames]):
-                xs[i, j, :] = np.array(Image.open(frame), dtype=np.float32)/255.0
-            #ys[i, 0] = 1 if "FAKE" in video[self.sample_frames][0] else 0
+                img = np.array(Image.open(frame), dtype=np.float32)
+                h, w, _ = img.shape
+                h, w = min(h, self.h), min(w, self.w)
+                xs[i, j, :h, :w, :] = img[:h,:w,:]
             ys[i] = 1 if "FAKE" in video[self.sample_frames][0] else 0
+        xs /= 255.0
+        xs -= [0.485, 0.456, 0.406]
+        xs /= [0.229, 0.224, 0.225]
         return xs, ys
 
 
@@ -92,18 +96,24 @@ class KaggleTrainBalanceGenerator(Sequence):
     def __data_generation(self, real_idxs, fake_idxs):
         # load dataset
         xs = np.zeros((self.batch, len(self.sample_frames), self.h, self.w, 3))
-        #ys = np.ones((self.batch, 1))
         ys = np.ones((self.batch))
         for i, video in enumerate(self.fake_paths[fake_idxs]):
             for j, frame in enumerate(video[self.sample_frames]):
-                xs[i, j, :] = np.array(Image.open(frame), dtype=np.float32)/255.0
-            #ys[i, 0] = 0
+                img = np.array(Image.open(frame), dtype=np.float32)
+                h, w, _ = img.shape
+                h, w = min(h, self.h), min(w, self.w)
+                xs[i, j, :h, :w, :] = img[:h,:w,:]
 
         for i, video in enumerate(self.real_paths[real_idxs]):
             for j, frame in enumerate(video[self.sample_frames]):
-                xs[i+self.batch//2, j, :] = np.array(Image.open(frame), dtype=np.float32)/255.0
-            #ys[i+self.batch//2, 0] = 0
+                img = np.array(Image.open(frame), dtype=np.float32)
+                h, w, _ = img.shape
+                h, w = min(h, self.h), min(w, self.w)
+                xs[i+self.batch//2, j, :h, :w, :] = img[:h,:w,:]
             ys[i+self.batch//2] = 0
+        xs /= 255.0
+        xs -= [0.485, 0.456, 0.406]
+        xs /= [0.229, 0.224, 0.225]
         return xs, ys
 
 
@@ -145,21 +155,25 @@ class KaggleTestGenerator(Sequence):
         xs = np.zeros((self.batch, len(self.sample_frames), self.h, self.w, 3))
         for i, video in enumerate(self.paths[idxs]):
             for j, frame in enumerate(video[self.sample_frames]):
-                xs[i, j, :] = np.array(Image.open(frame), dtype=np.float32)/255.0
+                img = np.array(Image.open(frame), dtype=np.float32)
+                h, w, _ = img.shape
+                h, w = min(h, self.h), min(w, self.w)
+                xs[i, j, :h, :w, :] = img[:h,:w,:]
+        xs /= 255.0
+        xs -= [0.485, 0.456, 0.406]
+        xs /= [0.229, 0.224, 0.225]
         return xs
 
 
 if __name__=="__main__":
-    data_generator = KaggleTrainBalanceGenerator(path="./dataset/train/", batch=30, shuffle=True)
+    data_generator = KaggleTrainBalanceGenerator(path="./dataset/train/", batch=30, shuffle=True, h=450, w=1800)
     for xs, ys in data_generator:
-        #print(xs)
         print(ys)
 
-    data_generator = KaggleTrainGenerator(path="./dataset/val/", batch=30, shuffle=True)
+    data_generator = KaggleTrainGenerator(path="./dataset/val/", batch=30, shuffle=True, h=450, w=1800)
     for xs, ys in data_generator:
-        #print(xs)
         print(ys)
 
-    data_generator = KaggleTestGenerator(path="./dataset/test/", batch=30, shuffle=True)
+    data_generator = KaggleTestGenerator(path="./dataset/test/", batch=30, shuffle=True, h=450, w=1800)
     for xs in data_generator:
         print(xs)
