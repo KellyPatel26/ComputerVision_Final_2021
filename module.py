@@ -50,7 +50,8 @@ class LSTMBlock(layers.Layer):
                               strides=(1, 1), 
                               return_sequences=True,
                               activation='relu', 
-                              name="{}_LSTM2".format(name))
+                              name="{}_LSTM2".format(name)),
+            layers.BatchNormalization(name="{}_BN2".format(name)),
         ])
 
     def call(self, x):
