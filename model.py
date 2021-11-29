@@ -5,7 +5,8 @@ CS1430 - Computer Vision
 Brown University
 """
 import tensorflow as tf
-from tensorflow.keras import Model, optimizers, losses, Sequential
+import tensorflow_addons as tfa
+from tensorflow.keras import Model, optimizers, losses, Sequential, Input
 from module import LSTMBlock, Classifier, CNNBlock
 
 
@@ -37,10 +38,10 @@ class CNNDeepFakeModel(Model):
 
 class LSTMDeepFakeModel(Model):
 
-    def __init__(self, args, h, w, size, freezeCNN=False):
+    def __init__(self, args, h, w, size):
         super(LSTMDeepFakeModel, self).__init__()
-    
-        # optimizer
+
+        # optimizeir
         self.optimizer = optimizers.Adam(learning_rate=args.lr)
 
         # architexture
@@ -49,9 +50,7 @@ class LSTMDeepFakeModel(Model):
             LSTMBlock(name="LSTM1", size=size, pooling=True),
             Classifier(name="classifier")
         ])
-        if freezeCNN:
-            self.freezeCNN()
-    
+
     def call(self, x):
         # x: (batch, frames, height, width, color-channel)
         x = self.architecture(x)

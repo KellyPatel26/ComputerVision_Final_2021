@@ -84,7 +84,7 @@ if __name__=="__main__":
     model = LSTMBlock("Block1", 450, 1800, 5, True)
     model(Input(shape=(5, 112, 450, 3)))
     model.model.summary()
-    exit()
+    
     model = CNNBlock("Block1", 450, 1800, 5, True)
     model(Input(shape=(5, 450, 1800, 3)))
     model.resnet.summary()

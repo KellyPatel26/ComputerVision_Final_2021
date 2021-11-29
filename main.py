@@ -9,10 +9,10 @@ import os
 import argparse
 import datetime
 import numpy as np
-from tensorflow.keras import callbacks, Input
+import tensorflow_addons as tfa
+from tensorflow.keras import callbacks, Input, optimizers
 from preprocess import KaggleTrainGenerator, KaggleTrainBalanceGenerator, KaggleTestGenerator
 from model import LSTMDeepFakeModel, CNNDeepFakeModel
-
 #os.environ['CUDA_VISIBLE_DEVICES'] = ""
 
 parser = argparse.ArgumentParser(description='DeepFakeClassifier')
@@ -21,7 +21,8 @@ parser.add_argument('--type', dest='type', default='CNN', help='LSTM/CNN/LSTM-F'
 parser.add_argument('--phase', dest='phase', default='train', help='train or test')
 parser.add_argument('--lr', dest='lr', type=float, default=0.0001, help='initial learning rate for adam')
 parser.add_argument('--batch_size', dest='batch_size', type=int, default=2, help='# of video for a batch')
-parser.add_argument('--epoch', dest='epoch', type=int, default=1000, help='# epoch')
+parser.add_argument('--epoch', dest='epoch', type=int, default=200, help='# epoch')
+parser.add_argument('--load_pretrain', dest='load_pretrain', default=None, help='load pretrain')
 parser.add_argument('--load_checkpoint', dest='load_checkpoint', default=None, help='load checkpoint')
 args = parser.parse_args()
 
@@ -52,10 +53,11 @@ def train(model, train_generator, val_generator, checkpoint_path, logs_path, ini
 
 def test(model, test_generator):
     # test on dataset with labels
-    model.evaluate_generator(
-        generator=test_generator,
-        verbose=1,
-    )
+    acc = model.evaluate_generator(
+            generator=test_generator,
+            verbose=1,
+        )
+    print(acc)
     """
     pred = model.predict_generator(
         generator=test_generator, verbose=1,
@@ -100,7 +102,7 @@ def main():
         # some hyper-parameters related to dataset are here
         sample = [0, 2, 4, 6, 8]
         total_frames = 10
-        h, w = 450, 1800 #450, 1800
+        h, w = 450, 1800 # 2500, 2500
         train_generator = KaggleTrainBalanceGenerator(path=os.path.join(args.dataset_dir, "train"), 
                                                       batch=args.batch_size, 
                                                       shuffle=True,
@@ -122,7 +124,7 @@ def main():
         # some hyper-parameters related to dataset are here
         sample = [0, 2, 4, 6, 8]
         total_frames = 10
-        h, w = 450, 1800 #450, 1800
+        h, w = 450, 1800
         train_generator = KaggleTrainBalanceGenerator(path=os.path.join(args.dataset_dir, "train"), 
                                                       batch=args.batch_size, 
                                                       shuffle=True,
@@ -137,8 +139,16 @@ def main():
                                              total_frames=total_frames,
                                              h=h,
                                              w=w)
-        model = LSTMDeepFakeModel(args, h, w, len(sample), True)
+        model = LSTMDeepFakeModel(args, h, w, len(sample))
         model(Input(shape=(len(sample), h, w, 3)))
+        opts = [
+            optimizers.Adam(learning_rate=args.lr*0.1),
+            optimizers.Adam(learning_rate=args.lr)
+        ]
+        optimizers_and_layers = [(opts[0], model.layers[0].layers[0]),
+                                 (opts[1], model.layers[0].layers[1:])]
+        model.optimizer = tfa.optimizers.MultiOptimizer(optimizers_and_layers)
+        #model.freezeCNN()
         model.summary()
 
 
@@ -148,19 +158,19 @@ def main():
         os.makedirs(checkpoint_path)
     if not os.path.exists(logs_path):
         os.makedirs(logs_path)   
-
+    
     # load checkpoints
     if args.load_checkpoint:
         assert os.path.split(args.load_checkpoint)[0]==checkpoint_path
         model.load_weights(args.load_checkpoint, by_name=True, skip_mismatch=True)
         init_epoch = int(os.path.split(args.load_checkpoint)[-1].split("-")[0])
-    
+
     # compile model graph
     model.compile(
         optimizer=model.optimizer,
         loss=model.loss_fn,
         metrics=["accuracy"])
-
+    
     if args.phase=='train':
         train(model, train_generator, val_generator, checkpoint_path, logs_path, init_epoch)
     else:
