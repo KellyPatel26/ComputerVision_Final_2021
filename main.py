@@ -57,13 +57,12 @@ def test(model, test_generator):
             generator=test_generator,
             verbose=1,
         )
-    print(acc)
     """
     pred = model.predict_generator(
         generator=test_generator, verbose=1,
     )
     """
-
+    return acc[1]
 
 def main():
     init_epoch = 0
@@ -78,9 +77,12 @@ def main():
     # specify model
     if args.type == 'CNN':
         # some hyper-parameters related to dataset are here
-        sample = [0, 2, 4, 6, 8]
+        sample = [0, 2, 4, 6, 8] #[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         total_frames = 10
-        h, w = 450, 1800
+        if args.phase!='test':
+            h, w = 450, 1800 
+        else:
+            h, w = 2500, 2500
         train_generator = KaggleTrainBalanceGenerator(path=os.path.join(args.dataset_dir, "train"), 
                                                       batch=args.batch_size, 
                                                       shuffle=True,
@@ -89,20 +91,31 @@ def main():
                                                       h=h,
                                                       w=w)
         val_generator = KaggleTrainGenerator(path=os.path.join(args.dataset_dir, "val"), 
-                                             batch=args.batch_size, 
+                                             batch=args.batch_size if args.phase!='test' else 1, 
                                              shuffle=False,
                                              sample_frames=sample,
                                              total_frames=total_frames,
                                              h=h,
                                              w=w)
+        if args.phase=='test':
+            test_generator = KaggleTrainGenerator(path=os.path.join(args.dataset_dir, "test"), 
+                                                  batch=1, 
+                                                  shuffle=False,
+                                                  sample_frames=sample,
+                                                  total_frames=total_frames,
+                                                  h=h,
+                                                  w=w)
         model = CNNDeepFakeModel(args, h, w, len(sample))
         model(Input(shape=(len(sample), h, w, 3)))
         model.summary()
     elif args.type == 'LSTM':
         # some hyper-parameters related to dataset are here
-        sample = [0, 2, 4, 6, 8]
+        sample = [0, 2, 4, 6, 8] # [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         total_frames = 10
-        h, w = 450, 1800 # 2500, 2500
+        if args.phase!='test':
+            h, w = 450, 1800 
+        else:
+            h, w = 2500, 2500
         train_generator = KaggleTrainBalanceGenerator(path=os.path.join(args.dataset_dir, "train"), 
                                                       batch=args.batch_size, 
                                                       shuffle=True,
@@ -111,20 +124,31 @@ def main():
                                                       h=h,
                                                       w=w)
         val_generator = KaggleTrainGenerator(path=os.path.join(args.dataset_dir, "val"), 
-                                             batch=args.batch_size, 
+                                             batch=args.batch_size if args.phase!='test' else 1, 
                                              shuffle=False,
                                              sample_frames=sample,
                                              total_frames=total_frames,
                                              h=h,
                                              w=w)
+        if args.phase=='test':
+            test_generator = KaggleTrainGenerator(path=os.path.join(args.dataset_dir, "test"), 
+                                                  batch=1, 
+                                                  shuffle=False,
+                                                  sample_frames=sample,
+                                                  total_frames=total_frames,
+                                                  h=h,
+                                                  w=w)
         model = LSTMDeepFakeModel(args, h, w, len(sample))
         model(Input(shape=(len(sample), h, w, 3)))
         model.summary()
     elif args.type == 'LSTM-F':
         # some hyper-parameters related to dataset are here
-        sample = [0, 2, 4, 6, 8]
+        sample = [0, 2, 4, 6, 8] #[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         total_frames = 10
-        h, w = 450, 1800
+        if args.phase!='test':
+            h, w = 450, 1800 
+        else:
+            h, w = 2500, 2500
         train_generator = KaggleTrainBalanceGenerator(path=os.path.join(args.dataset_dir, "train"), 
                                                       batch=args.batch_size, 
                                                       shuffle=True,
@@ -133,12 +157,20 @@ def main():
                                                       h=h,
                                                       w=w)
         val_generator = KaggleTrainGenerator(path=os.path.join(args.dataset_dir, "val"), 
-                                             batch=args.batch_size, 
+                                             batch=args.batch_size if args.phase!='test' else 1, 
                                              shuffle=False,
                                              sample_frames=sample,
                                              total_frames=total_frames,
                                              h=h,
                                              w=w)
+        if args.phase=='test':
+            test_generator = KaggleTrainGenerator(path=os.path.join(args.dataset_dir, "test"), 
+                                                  batch=1, 
+                                                  shuffle=False,
+                                                  sample_frames=sample,
+                                                  total_frames=total_frames,
+                                                  h=h,
+                                                  w=w)
         model = LSTMDeepFakeModel(args, h, w, len(sample))
         model(Input(shape=(len(sample), h, w, 3)))
         opts = [
@@ -174,7 +206,10 @@ def main():
     if args.phase=='train':
         train(model, train_generator, val_generator, checkpoint_path, logs_path, init_epoch)
     else:
-        test(model, val_generator)
+        acc = test(model, val_generator)
+        print("val: {}".format(acc))
+        acc = test(model, test_generator)
+        print("test: {}".format(acc))
 
 
 if __name__ == '__main__':
