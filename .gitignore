@@ -1,0 +1,12 @@
+dataset/*
+checkpoints/LSTM/*
+logs/LSTM/*
+checkpoints/LSTM-F/*
+logs/LSTM-F/*
+checkpoints/CNN/*
+logs/CNN/*
+__pycache__/
+
+!dataset/videos.py
+!checkpoints/README
+!logs/README
