@@ -18,9 +18,9 @@ trained_face_data = cv2.CascadeClassifier(haar_model)
 # User defined settings
 BBOX_MAX_WIDTH = 600 
 BBOX_MAX_HEIGHT = 600  
-NUM_FRAMES = 5 
-CROPPED_IMGS_FOLDER_NAME = 'cropped'
-DATA_FOLDER = './val/'
+NUM_FRAMES = 10
+CROPPED_IMGS_FOLDER_NAME = '/Users/jc/Desktop/small_cropped/'
+DATA_FOLDER = './small/'
 
 def get_mod_coord(coord, coord_dist, bbox_max):
     bbox_length = bbox_max - coord_dist
@@ -97,5 +97,5 @@ for p in paths:
 
                 # store cropped img
                 num_cropped_imgs = len(cropped_imgs)
-                for i in range(num_cropped_imgs):
-                    cv2.imwrite(new_folder_path + '/face_' + str(i) + '.jpg', cropped_imgs[i])
+                for img_i in range(num_cropped_imgs):
+                    cv2.imwrite(new_folder_path + '/face_' + str(i) + '_' + str(img_i) + '.jpg', cropped_imgs[img_i])
