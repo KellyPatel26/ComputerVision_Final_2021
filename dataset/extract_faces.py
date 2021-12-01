@@ -73,18 +73,16 @@ for p in paths:
                 (mod_y, mod_y_h) = get_mod_coord(y, h, BBOX_MAX_HEIGHT)
 
                 img_h, img_w, _ = img.shape
-                
+                print("my mod coords: ", mod_x, mod_x_w, mod_y, mod_y_h)
                 # pad then crop the image 
                 left_padding, right_padding, top_padding, bottom_padding = 0, 0, 0, 0
                 if mod_x < 0: 
                     left_padding = 0 - mod_x
                     # shift coordinates 
-                    mod_x_w = mod_x_w -left_padding
                     mod_x = 0
                 if mod_y < 0:
                     top_padding = 0 - mod_y
                     # shift coordinates up
-                    mod_y_h = mod_y_h - top_padding
                     mod_y = 0
                 if mod_x_w > img_w : 
                     right_padding = mod_x_w - img_w
@@ -92,9 +90,10 @@ for p in paths:
                     bottom_padding = mod_y_h - img_h
 
                 padded_img = cv2.copyMakeBorder(img, top_padding, bottom_padding, left_padding, right_padding, cv2.BORDER_CONSTANT, value=[0, 0, 0])
-                cropped_img = padded_img[mod_y:mod_y_h, mod_x:mod_x_w]
+                print("padded img shape: ", padded_img.shape)
+                cropped_img = padded_img[mod_y:mod_y + BBOX_MAX_HEIGHT, mod_x:mod_x + BBOX_MAX_WIDTH]
                 cropped_imgs.append(cropped_img)
-
+                print("cropped img shape: ", cropped_img.shape)
                 # store cropped img
                 num_cropped_imgs = len(cropped_imgs)
                 for img_i in range(num_cropped_imgs):
