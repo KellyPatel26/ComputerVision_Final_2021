@@ -31,3 +31,9 @@ python main.py --type {type} --load_checkpoint ./checkpoints/{type}/{timestamp}/
 ```
 python main.py --type {type} --phase test --load_checkpoint ./checkpoints/{type}/{timestamp}/{hdf5 file}
 ```
+
+## For Extracting Face Data 
+```
+pip install opencv-python
+python extract_faces.py
+```
