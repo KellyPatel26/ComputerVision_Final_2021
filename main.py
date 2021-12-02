@@ -71,8 +71,8 @@ def test(model, test_generator):
         # print("X:", x)
         print("Y:", y)
         prediction = model(x).numpy()
-        print("Prediction:", prediction)
-        if prediction <= 0.5:
+        print("Prediction:", prediction[0][0])
+        if prediction[0][0] <= 0.5:
             c = 0
             type = "REAL"
         else:
