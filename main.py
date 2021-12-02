@@ -70,7 +70,7 @@ def test(model, test_generator):
     for x, y in test_generator:
         print("X:", x)
         print("Y:", y)
-        prediction = model(x)
+        prediction = model(x).numpy()
         print("Prediction:", prediction)
         if prediction <= 0.5:
             c = 0
@@ -95,19 +95,19 @@ def test(model, test_generator):
                     res = cv2.imwrite(path, x[j])
             print("Written image!", res)
         else:
-            if type == "REAL" and real_count < 3:
+            if type == "REAL" and correct_real < 3:
                 correct_real += 1
                 os.mkdir('correctly_labeled/'+type+"/"+str(correct_real))
                 for j in range(len(x)):
                     path = './correctly_labeled/'+type+"/"+str(correct_real)+"/"+ str(j) + '.jpg'
                     res = cv2.imwrite(path, x[j])
-            elif type == "FAKE" and fake_count < 3:
+            elif type == "FAKE" and correct_fake < 3:
                 correct_fake += 1
                 os.mkdir('correctly_labeled/'+type+"/"+str(correct_fake))
                 for j in range(len(x)):
                     path = './correctly_labeled/'+type+"/"+str(correct_fake)+"/"+ str(j) + '.jpg'
                     res = cv2.imwrite(path, x[j])
-            print("Written image!", res)
+        print("Written image!", res, path)
         print("Nums:", real_count, fake_count, correct_real, correct_fake)
         if real_count == 3 and fake_count == 3 and correct_fake == 3 and correct_real == 3:
             print("Got 3 for each!")
