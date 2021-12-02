@@ -87,7 +87,7 @@ def test(model, test_generator):
                 os.mkdir('mislabeled/'+type+"/"+str(real_count))
                 for j in range(len(x[0])):
                     path = './mislabeled/'+type+"/"+str(real_count)+"/"+ str(j) + '.jpg'
-                    print(x[0][j])
+                    print("Here is the frame!:",x[0][j])
                     res = cv2.imwrite(path, x[0][j])
             elif type == "FAKE" and fake_count < 3:
                 fake_count += 1
