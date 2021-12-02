@@ -83,24 +83,24 @@ def test(model, test_generator):
             if type == "REAL" and real_count < 3:
                 real_count += 1
                 for j in range(len(x)):
-                    path = '.\\data\\mislabeled\\'+type+"\\"+str(real_count)+"\\"+ str(j) + '.jpg'
+                    path = '.\\mislabeled\\'+type+"\\"+str(real_count)+"\\"+ str(j) + '.jpg'
                     res = cv2.imwrite(path, x[j])
             elif type == "FAKE" and fake_count < 3:
                 fake_count += 1
                 for j in range(len(x)):
-                    path = '.\\data\\mislabeled\\'+type+"\\"+str(fake_count)+"\\"+ str(j) + '.jpg'
+                    path = '.\\mislabeled\\'+type+"\\"+str(fake_count)+"\\"+ str(j) + '.jpg'
                     res = cv2.imwrite(path, x[j])
             print("Written image!", res)
         else:
             if type == "REAL" and real_count < 3:
                 correct_real += 1
                 for j in range(len(x)):
-                    path = '.\\data\\correctly_labeled\\'+type+"\\"+str(correct_real)+"\\"+ str(j) + '.jpg'
+                    path = '.\\correctly_labeled\\'+type+"\\"+str(correct_real)+"\\"+ str(j) + '.jpg'
                     res = cv2.imwrite(path, x[j])
             elif type == "FAKE" and fake_count < 3:
                 correct_fake += 1
                 for j in range(len(x)):
-                    path = '.\\data\\correctly_labeled\\'+type+"\\"+str(correct_fake)+"\\"+ str(j) + '.jpg'
+                    path = '.\\correctly_labeled\\'+type+"\\"+str(correct_fake)+"\\"+ str(j) + '.jpg'
                     res = cv2.imwrite(path, x[j])
             print("Written image!", res)
         print("Nums:", real_count, fake_count, correct_real, correct_fake)
