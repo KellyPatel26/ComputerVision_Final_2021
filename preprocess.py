@@ -166,14 +166,14 @@ class KaggleTestGenerator(Sequence):
 
 
 if __name__=="__main__":
-    data_generator = KaggleTrainBalanceGenerator(path="./dataset/train/", batch=30, shuffle=True, h=450, w=1800)
+    data_generator = KaggleTrainBalanceGenerator(path=".\\dataset\\train\\", batch=30, shuffle=True, h=450, w=1800)
     for xs, ys in data_generator:
         print(ys)
 
-    data_generator = KaggleTrainGenerator(path="./dataset/val/", batch=30, shuffle=True, h=450, w=1800)
+    data_generator = KaggleTrainGenerator(path=".\\dataset\\val\\", batch=30, shuffle=True, h=450, w=1800)
     for xs, ys in data_generator:
         print(ys)
 
-    data_generator = KaggleTestGenerator(path="./dataset/test/", batch=30, shuffle=True, h=450, w=1800)
+    data_generator = KaggleTestGenerator(path=".\\dataset\\test\\", batch=30, shuffle=True, h=450, w=1800)
     for xs in data_generator:
         print(xs)

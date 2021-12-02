@@ -8,6 +8,7 @@ Usage:
 import os
 import argparse
 import datetime
+import cv2
 import numpy as np
 import tensorflow_addons as tfa
 from tensorflow.keras import callbacks, Input, optimizers
@@ -57,11 +58,56 @@ def test(model, test_generator):
             generator=test_generator,
             verbose=1,
         )
-    """
-    pred = model.predict_generator(
-        generator=test_generator, verbose=1,
-    )
-    """
+    
+    # pred = model.predict_generator(
+    #     generator=test_generator, verbose=1,
+    # )
+    fake_count = 0
+    real_count = 0
+    correct_fake = 0
+    correct_real = 0
+
+    for x, y in test_generator:
+        print("X:", x)
+        print("Y:", y)
+        prediction = model(x)
+        print("Prediction:", prediction)
+        if prediction <= 0.5:
+            c = 0
+            type = "REAL"
+        else:
+            c = 1
+            type = "FAKE"
+        print("Class:", c)
+        if c != y[0]:
+            if type == "REAL" and real_count < 3:
+                real_count += 1
+                for j in range(len(x)):
+                    path = '.\\data\\mislabeled\\'+type+"\\"+str(real_count)+"\\"+ str(j) + '.jpg'
+                    res = cv2.imwrite(path, x[j])
+            elif type == "FAKE" and fake_count < 3:
+                fake_count += 1
+                for j in range(len(x)):
+                    path = '.\\data\\mislabeled\\'+type+"\\"+str(fake_count)+"\\"+ str(j) + '.jpg'
+                    res = cv2.imwrite(path, x[j])
+            print("Written image!", res)
+        else:
+            if type == "REAL" and real_count < 3:
+                correct_real += 1
+                for j in range(len(x)):
+                    path = '.\\data\\correctly_labeled\\'+type+"\\"+str(correct_real)+"\\"+ str(j) + '.jpg'
+                    res = cv2.imwrite(path, x[j])
+            elif type == "FAKE" and fake_count < 3:
+                correct_fake += 1
+                for j in range(len(x)):
+                    path = '.\\data\\correctly_labeled\\'+type+"\\"+str(correct_fake)+"\\"+ str(j) + '.jpg'
+                    res = cv2.imwrite(path, x[j])
+            print("Written image!", res)
+        print("Nums:", real_count, fake_count, correct_real, correct_fake)
+        if real_count == 3 and fake_count == 3 and correct_fake == 3 and correct_real == 3:
+            print("Got 3 for each!")
+            break        
+
     return acc[1]
 
 def main():
@@ -72,8 +118,14 @@ def main():
     if args.load_checkpoint and os.path.exists(args.load_checkpoint):
         timestamp = args.load_checkpoint.split(os.sep)[-2]
     
-    save_dir = "./checkpoints/" 
-    log_dir = "./logs/"
+    # Not windows:
+    # save_dir = "./checkpoints/" 
+    # log_dir = "./logs/"
+
+    # windows:
+    save_dir = ".\\checkpoints\\"
+    log_dir = ".\\logs\\"
+    
     # specify model
     if args.type == 'CNN':
         # some hyper-parameters related to dataset are here
@@ -206,8 +258,8 @@ def main():
     if args.phase=='train':
         train(model, train_generator, val_generator, checkpoint_path, logs_path, init_epoch)
     else:
-        acc = test(model, val_generator)
-        print("val: {}".format(acc))
+        # acc = test(model, val_generator)
+        # print("val: {}".format(acc))
         acc = test(model, test_generator)
         print("test: {}".format(acc))
 
