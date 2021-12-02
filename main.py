@@ -250,6 +250,7 @@ def main():
     
     # load checkpoints
     if args.load_checkpoint:
+        print("PATH", checkpoint_path,os.path.split(args.load_checkpoint) )
         assert os.path.split(args.load_checkpoint)[0]==checkpoint_path
         model.load_weights(args.load_checkpoint, by_name=True, skip_mismatch=True)
         init_epoch = int(os.path.split(args.load_checkpoint)[-1].split("-")[0])
