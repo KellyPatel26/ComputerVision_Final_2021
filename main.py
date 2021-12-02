@@ -90,6 +90,8 @@ def test(model, test_generator):
                     frame = np.array(x[0][j])
                     norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
                     norm_frame = norm_frame.astype(np.uint8)
+                    print("Normalized!", norm_frame)
+
                     res = cv2.imwrite(path, norm_frame)
             elif type == "FAKE" and fake_count < 3:
                 fake_count += 1
@@ -100,6 +102,8 @@ def test(model, test_generator):
                     frame = np.array(x[0][j])
                     norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
                     norm_frame = norm_frame.astype(np.uint8)
+                    print("Normalized!", norm_frame)
+
                     res = cv2.imwrite(path, norm_frame)
             print("Written image!", res)
         else:
@@ -111,6 +115,8 @@ def test(model, test_generator):
                     frame = np.array(x[0][j])
                     norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
                     norm_frame = norm_frame.astype(np.uint8)
+                    print("Normalized!", norm_frame)
+
                     res = cv2.imwrite(path, norm_frame)
             elif type == "FAKE" and correct_fake < 3:
                 correct_fake += 1
@@ -120,6 +126,7 @@ def test(model, test_generator):
                     frame = np.array(x[0][j])
                     norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
                     norm_frame = norm_frame.astype(np.uint8)
+                    print("Normalized!", norm_frame)
                     res = cv2.imwrite(path, norm_frame)
         print("Written image!", res, path)
         print("Nums:", real_count, fake_count, correct_real, correct_fake)
