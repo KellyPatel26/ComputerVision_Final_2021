@@ -68,7 +68,7 @@ def test(model, test_generator):
     correct_real = 0
 
     for x, y in test_generator:
-        # print("X:", x)
+        print("X:", x.shape)
         print("Y:", y)
         prediction = model(x).numpy()
         print("Prediction:", prediction[0][0])
@@ -87,14 +87,14 @@ def test(model, test_generator):
                 os.mkdir('mislabeled/'+type+"/"+str(real_count))
                 for j in range(len(x)):
                     path = './mislabeled/'+type+"/"+str(real_count)+"/"+ str(j) + '.jpg'
-                    res = cv2.imwrite(path, x[j])
+                    res = cv2.imwrite(path, x[0][j])
             elif type == "FAKE" and fake_count < 3:
                 fake_count += 1
                 os.mkdir('mislabeled/'+type+"/"+str(fake_count))
 
                 for j in range(len(x)):
                     path = './mislabeled/'+type+"/"+str(fake_count)+"/"+ str(j) + '.jpg'
-                    res = cv2.imwrite(path, x[j])
+                    res = cv2.imwrite(path, x[0][j])
             print("Written image!", res)
         else:
             if type == "REAL" and correct_real < 3:
@@ -102,13 +102,13 @@ def test(model, test_generator):
                 os.mkdir('correctly_labeled/'+type+"/"+str(correct_real))
                 for j in range(len(x)):
                     path = './correctly_labeled/'+type+"/"+str(correct_real)+"/"+ str(j) + '.jpg'
-                    res = cv2.imwrite(path, x[j])
+                    res = cv2.imwrite(path, x[0][j])
             elif type == "FAKE" and correct_fake < 3:
                 correct_fake += 1
                 os.mkdir('correctly_labeled/'+type+"/"+str(correct_fake))
                 for j in range(len(x)):
                     path = './correctly_labeled/'+type+"/"+str(correct_fake)+"/"+ str(j) + '.jpg'
-                    res = cv2.imwrite(path, x[j])
+                    res = cv2.imwrite(path, x[0][j])
         print("Written image!", res, path)
         print("Nums:", real_count, fake_count, correct_real, correct_fake)
         if real_count == 3 and fake_count == 3 and correct_fake == 3 and correct_real == 3:
