@@ -87,14 +87,24 @@ def test(model, test_generator):
                 os.mkdir('mislabeled/'+type+"/"+str(real_count))
                 for j in range(len(x[0])):
                     path = './mislabeled/'+type+"/"+str(real_count)+"/"+ str(j) + '.jpg'
-                    res = cv2.imwrite(path, x[0][j])
+                    frame = np.array(x[0][j])
+                    norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
+                    norm_frame = norm_frame.astype(np.uint8)
+                    print("Normalized!", norm_frame)
+
+                    res = cv2.imwrite(path, norm_frame)
             elif type == "FAKE" and fake_count < 3:
                 fake_count += 1
                 os.mkdir('mislabeled/'+type+"/"+str(fake_count))
 
                 for j in range(len(x[0])):
                     path = './mislabeled/'+type+"/"+str(fake_count)+"/"+ str(j) + '.jpg'
-                    res = cv2.imwrite(path, x[0][j])
+                    frame = np.array(x[0][j])
+                    norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
+                    norm_frame = norm_frame.astype(np.uint8)
+                    print("Normalized!", norm_frame)
+
+                    res = cv2.imwrite(path, norm_frame)
             print("Written image!", res)
         else:
             if type == "REAL" and correct_real < 3:
@@ -102,13 +112,22 @@ def test(model, test_generator):
                 os.mkdir('correctly_labeled/'+type+"/"+str(correct_real))
                 for j in range(len(x[0])):
                     path = './correctly_labeled/'+type+"/"+str(correct_real)+"/"+ str(j) + '.jpg'
-                    res = cv2.imwrite(path, x[0][j])
+                    frame = np.array(x[0][j])
+                    norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
+                    norm_frame = norm_frame.astype(np.uint8)
+                    print("Normalized!", norm_frame)
+
+                    res = cv2.imwrite(path, norm_frame)
             elif type == "FAKE" and correct_fake < 3:
                 correct_fake += 1
                 os.mkdir('correctly_labeled/'+type+"/"+str(correct_fake))
                 for j in range(len(x[0])):
                     path = './correctly_labeled/'+type+"/"+str(correct_fake)+"/"+ str(j) + '.jpg'
-                    res = cv2.imwrite(path, x[0][j])
+                    frame = np.array(x[0][j])
+                    norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
+                    norm_frame = norm_frame.astype(np.uint8)
+                    print("Normalized!", norm_frame)
+                    res = cv2.imwrite(path, norm_frame)
         print("Written image!", res, path)
         print("Nums:", real_count, fake_count, correct_real, correct_fake)
         if real_count == 3 and fake_count == 3 and correct_fake == 3 and correct_real == 3:
