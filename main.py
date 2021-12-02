@@ -82,30 +82,30 @@ def test(model, test_generator):
         if c != y[0]:
             if type == "REAL" and real_count < 3:
                 real_count += 1
-                os.mkdir('mislabeled\\'+type+"\\"+str(real_count))
+                os.mkdir('mislabeled/'+type+"/"+str(real_count))
                 for j in range(len(x)):
-                    path = '.\\mislabeled\\'+type+"\\"+str(real_count)+"\\"+ str(j) + '.jpg'
+                    path = './mislabeled/'+type+"/"+str(real_count)+"/"+ str(j) + '.jpg'
                     res = cv2.imwrite(path, x[j])
             elif type == "FAKE" and fake_count < 3:
                 fake_count += 1
-                os.mkdir('mislabeled\\'+type+"\\"+str(fake_count))
+                os.mkdir('mislabeled/'+type+"/"+str(fake_count))
 
                 for j in range(len(x)):
-                    path = '.\\mislabeled\\'+type+"\\"+str(fake_count)+"\\"+ str(j) + '.jpg'
+                    path = './mislabeled/'+type+"/"+str(fake_count)+"/"+ str(j) + '.jpg'
                     res = cv2.imwrite(path, x[j])
             print("Written image!", res)
         else:
             if type == "REAL" and real_count < 3:
                 correct_real += 1
-                os.mkdir('correctly_labeled\\'+type+"\\"+str(correct_real))
+                os.mkdir('correctly_labeled/'+type+"/"+str(correct_real))
                 for j in range(len(x)):
-                    path = '.\\correctly_labeled\\'+type+"\\"+str(correct_real)+"\\"+ str(j) + '.jpg'
+                    path = './correctly_labeled/'+type+"/"+str(correct_real)+"/"+ str(j) + '.jpg'
                     res = cv2.imwrite(path, x[j])
             elif type == "FAKE" and fake_count < 3:
                 correct_fake += 1
-                os.mkdir('correctly_labeled\\'+type+"\\"+str(correct_fake))
+                os.mkdir('correctly_labeled/'+type+"/"+str(correct_fake))
                 for j in range(len(x)):
-                    path = '.\\correctly_labeled\\'+type+"\\"+str(correct_fake)+"\\"+ str(j) + '.jpg'
+                    path = './correctly_labeled/'+type+"/"+str(correct_fake)+"/"+ str(j) + '.jpg'
                     res = cv2.imwrite(path, x[j])
             print("Written image!", res)
         print("Nums:", real_count, fake_count, correct_real, correct_fake)
@@ -128,8 +128,8 @@ def main():
     # log_dir = "./logs/"
 
     # windows:
-    save_dir = ".\\checkpoints\\"
-    log_dir = ".\\logs\\"
+    save_dir = "./checkpoints/"
+    log_dir = "./logs/"
     
     # specify model
     if args.type == 'CNN':
