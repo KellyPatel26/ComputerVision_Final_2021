@@ -68,7 +68,7 @@ def test(model, test_generator):
     correct_real = 0
 
     for x, y in test_generator:
-        print("X:", x)
+        # print("X:", x)
         print("Y:", y)
         prediction = model(x).numpy()
         print("Prediction:", prediction)
@@ -78,7 +78,9 @@ def test(model, test_generator):
         else:
             c = 1
             type = "FAKE"
-        print("Class:", c)
+        print("Class:", c, type)
+        path = ""
+        res = 0
         if c != y[0]:
             if type == "REAL" and real_count < 3:
                 real_count += 1
