@@ -85,14 +85,14 @@ def test(model, test_generator):
             if type == "REAL" and real_count < 3:
                 real_count += 1
                 os.mkdir('mislabeled/'+type+"/"+str(real_count))
-                for j in range(len(x)):
+                for j in range(len(x[0])):
                     path = './mislabeled/'+type+"/"+str(real_count)+"/"+ str(j) + '.jpg'
                     res = cv2.imwrite(path, x[0][j])
             elif type == "FAKE" and fake_count < 3:
                 fake_count += 1
                 os.mkdir('mislabeled/'+type+"/"+str(fake_count))
 
-                for j in range(len(x)):
+                for j in range(len(x[0])):
                     path = './mislabeled/'+type+"/"+str(fake_count)+"/"+ str(j) + '.jpg'
                     res = cv2.imwrite(path, x[0][j])
             print("Written image!", res)
@@ -100,13 +100,13 @@ def test(model, test_generator):
             if type == "REAL" and correct_real < 3:
                 correct_real += 1
                 os.mkdir('correctly_labeled/'+type+"/"+str(correct_real))
-                for j in range(len(x)):
+                for j in range(len(x[0])):
                     path = './correctly_labeled/'+type+"/"+str(correct_real)+"/"+ str(j) + '.jpg'
                     res = cv2.imwrite(path, x[0][j])
             elif type == "FAKE" and correct_fake < 3:
                 correct_fake += 1
                 os.mkdir('correctly_labeled/'+type+"/"+str(correct_fake))
-                for j in range(len(x)):
+                for j in range(len(x[0])):
                     path = './correctly_labeled/'+type+"/"+str(correct_fake)+"/"+ str(j) + '.jpg'
                     res = cv2.imwrite(path, x[0][j])
         print("Written image!", res, path)
