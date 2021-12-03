@@ -13,6 +13,7 @@ This is deepfake classification model
 
 ## For training CNN
 ```
+pip install tensorflow_addons
 python main.py
 ```
 ## For training LSTM
