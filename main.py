@@ -14,6 +14,7 @@ import tensorflow_addons as tfa
 from tensorflow.keras import callbacks, Input, optimizers
 from preprocess import KaggleTrainGenerator, KaggleTrainBalanceGenerator, KaggleTestGenerator
 from model import LSTMDeepFakeModel, CNNDeepFakeModel
+from PIL import Image
 #os.environ['CUDA_VISIBLE_DEVICES'] = ""
 
 parser = argparse.ArgumentParser(description='DeepFakeClassifier')
@@ -88,12 +89,15 @@ def test(model, test_generator):
                 for j in range(len(x[0])):
                     path = './mislabeled/'+type+"/"+str(real_count)+"/"+ str(j) + '.jpg'
                     frame = np.array(x[0][j])
-                    # norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
-                    # norm_frame = norm_frame.astype(np.uint8)
+                    # norm_frame = (255*(frame - np.min(frame))/np.ptp(frame)).astype(int)        
+                    norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
+                    norm_frame = norm_frame.astype(np.uint8)
                     # print("Normalized!", norm_frame)
-                    norm_frame = (255*(frame - np.min(frame))/np.ptp(frame)).astype(int)        
+                    # im = Image.fromarray(norm_frame)      
                     print("Normalized!", norm_frame)
-                    res = cv2.imwrite(path, norm_frame)
+                    norm = cv2.cvtColor(norm_frame, cv2.COLOR_BGR2RBG)
+                    res = cv2.imwrite(path, norm)
+                    # im.save(path)
             elif type == "FAKE" and fake_count < 3:
                 fake_count += 1
                 os.mkdir('mislabeled/'+type+"/"+str(fake_count))
@@ -101,13 +105,15 @@ def test(model, test_generator):
                 for j in range(len(x[0])):
                     path = './mislabeled/'+type+"/"+str(fake_count)+"/"+ str(j) + '.jpg'
                     frame = np.array(x[0][j])
-                    # norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
-                    # norm_frame = norm_frame.astype(np.uint8)
-                    norm_frame = (255*(frame - np.min(frame))/np.ptp(frame)).astype(int)        
-
+                    # norm_frame = (255*(frame - np.min(frame))/np.ptp(frame)).astype(int)        
+                    norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
+                    norm_frame = norm_frame.astype(np.uint8)
+                    # print("Normalized!", norm_frame)
+                    # im = Image.fromarray(norm_frame)      
                     print("Normalized!", norm_frame)
-
-                    res = cv2.imwrite(path, norm_frame)
+                    norm = cv2.cvtColor(norm_frame, cv2.COLOR_BGR2RBG)
+                    res = cv2.imwrite(path, norm)
+                    # im.save(path)
             print("Written image!", res)
         else:
             if type == "REAL" and correct_real < 3:
@@ -116,25 +122,31 @@ def test(model, test_generator):
                 for j in range(len(x[0])):
                     path = './correctly_labeled/'+type+"/"+str(correct_real)+"/"+ str(j) + '.jpg'
                     frame = np.array(x[0][j])
-                    # norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
-                    # norm_frame = norm_frame.astype(np.uint8)
-                    norm_frame = (255*(frame - np.min(frame))/np.ptp(frame)).astype(int)        
-
+                    # norm_frame = (255*(frame - np.min(frame))/np.ptp(frame)).astype(int)        
+                    norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
+                    norm_frame = norm_frame.astype(np.uint8)
+                    # print("Normalized!", norm_frame)
+                    # im = Image.fromarray(norm_frame)      
                     print("Normalized!", norm_frame)
+                    norm = cv2.cvtColor(norm_frame, cv2.COLOR_BGR2RBG)
+                    res = cv2.imwrite(path, norm)
+                    # im.save(path)
 
-                    res = cv2.imwrite(path, norm_frame)
             elif type == "FAKE" and correct_fake < 3:
                 correct_fake += 1
                 os.mkdir('correctly_labeled/'+type+"/"+str(correct_fake))
                 for j in range(len(x[0])):
                     path = './correctly_labeled/'+type+"/"+str(correct_fake)+"/"+ str(j) + '.jpg'
                     frame = np.array(x[0][j])
-                    # norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
-                    # norm_frame = norm_frame.astype(np.uint8)
-                    norm_frame = (255*(frame - np.min(frame))/np.ptp(frame)).astype(int)        
-
+                    # norm_frame = (255*(frame - np.min(frame))/np.ptp(frame)).astype(int)        
+                    norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
+                    norm_frame = norm_frame.astype(np.uint8)
+                    # print("Normalized!", norm_frame)
+                    # im = Image.fromarray(norm_frame)      
                     print("Normalized!", norm_frame)
-                    res = cv2.imwrite(path, norm_frame)
+                    norm = cv2.cvtColor(norm_frame, cv2.COLOR_BGR2RBG)
+                    res = cv2.imwrite(path, norm)
+                    # im.save(path)
         print("Written image!", res, path)
         print("Nums:", real_count, fake_count, correct_real, correct_fake)
         if real_count == 3 and fake_count == 3 and correct_fake == 3 and correct_real == 3:
