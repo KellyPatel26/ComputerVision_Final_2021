@@ -63,95 +63,68 @@ def test(model, test_generator):
     # pred = model.predict_generator(
     #     generator=test_generator, verbose=1,
     # )
-    fake_count = 0
-    real_count = 0
-    correct_fake = 0
-    correct_real = 0
+    ''' uncomment below code to get misclassified images'''
+    # fake_count = 0
+    # real_count = 0
+    # correct_fake = 0
+    # correct_real = 0
 
-    for x, y in test_generator:
-        print("X:", x.shape)
-        print("Y:", y)
-        prediction = model(x).numpy()
-        print("Prediction:", prediction[0][0])
-        if prediction[0][0] <= 0.5:
-            c = 0
-            type = "REAL"
-        else:
-            c = 1
-            type = "FAKE"
-        print("Class:", c, type)
-        path = ""
-        res = 0
-        if c != y[0]:
-            if type == "REAL" and real_count < 3:
-                real_count += 1
-                os.mkdir('mislabeled/'+type+"/"+str(real_count))
-                for j in range(len(x[0])):
-                    path = './mislabeled/'+type+"/"+str(real_count)+"/"+ str(j) + '.jpg'
-                    frame = np.array(x[0][j])
-                    # norm_frame = (255*(frame - np.min(frame))/np.ptp(frame)).astype(int)        
-                    norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
-                    norm_frame = norm_frame.astype(np.uint8)
-                    # print("Normalized!", norm_frame)
-                    # im = Image.fromarray(norm_frame)      
-                    print("Normalized!", norm_frame)
-                    norm = cv2.cvtColor(norm_frame, cv2.COLOR_BGR2RBG)
-                    res = cv2.imwrite(path, norm)
-                    # im.save(path)
-            elif type == "FAKE" and fake_count < 3:
-                fake_count += 1
-                os.mkdir('mislabeled/'+type+"/"+str(fake_count))
+    # for x, y in test_generator:
+    #     prediction = model(x).numpy()
+    #     if prediction[0][0] <= 0.5:
+    #         c = 0
+    #         type = "REAL"
+    #     else:
+    #         c = 1
+    #         type = "FAKE"
+    #     path = ""
+    #     res = 0
+    #     if c != y[0]:
+    #         if type == "REAL" and real_count < 3:
+    #             real_count += 1
+    #             os.mkdir('mislabeled/'+type+"/"+str(real_count))
+    #             for j in range(len(x[0])):
+    #                 path = './mislabeled/'+type+"/"+str(real_count)+"/"+ str(j) + '.jpg'
+    #                 frame = np.array(x[0][j])     
+    #                 norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
+    #                 norm_frame = norm_frame.astype(np.uint8)  
+    #                 norm = cv2.cvtColor(norm_frame, cv2.COLOR_BGR2RBG)
+    #                 res = cv2.imwrite(path, norm)
+    #         elif type == "FAKE" and fake_count < 3:
+    #             fake_count += 1
+    #             os.mkdir('mislabeled/'+type+"/"+str(fake_count))
 
-                for j in range(len(x[0])):
-                    path = './mislabeled/'+type+"/"+str(fake_count)+"/"+ str(j) + '.jpg'
-                    frame = np.array(x[0][j])
-                    # norm_frame = (255*(frame - np.min(frame))/np.ptp(frame)).astype(int)        
-                    norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
-                    norm_frame = norm_frame.astype(np.uint8)
-                    # print("Normalized!", norm_frame)
-                    # im = Image.fromarray(norm_frame)      
-                    print("Normalized!", norm_frame)
-                    norm = cv2.cvtColor(norm_frame, cv2.COLOR_BGR2RBG)
-                    res = cv2.imwrite(path, norm)
-                    # im.save(path)
-            print("Written image!", res)
-        else:
-            if type == "REAL" and correct_real < 3:
-                correct_real += 1
-                os.mkdir('correctly_labeled/'+type+"/"+str(correct_real))
-                for j in range(len(x[0])):
-                    path = './correctly_labeled/'+type+"/"+str(correct_real)+"/"+ str(j) + '.jpg'
-                    frame = np.array(x[0][j])
-                    # norm_frame = (255*(frame - np.min(frame))/np.ptp(frame)).astype(int)        
-                    norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
-                    norm_frame = norm_frame.astype(np.uint8)
-                    # print("Normalized!", norm_frame)
-                    # im = Image.fromarray(norm_frame)      
-                    print("Normalized!", norm_frame)
-                    norm = cv2.cvtColor(norm_frame, cv2.COLOR_BGR2RBG)
-                    res = cv2.imwrite(path, norm)
-                    # im.save(path)
+    #             for j in range(len(x[0])):
+    #                 path = './mislabeled/'+type+"/"+str(fake_count)+"/"+ str(j) + '.jpg'
+    #                 frame = np.array(x[0][j])     
+    #                 norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
+    #                 norm_frame = norm_frame.astype(np.uint8)
+    #                 norm = cv2.cvtColor(norm_frame, cv2.COLOR_BGR2RBG)
+    #                 res = cv2.imwrite(path, norm)
+    #     else:
+    #         if type == "REAL" and correct_real < 3:
+    #             correct_real += 1
+    #             os.mkdir('correctly_labeled/'+type+"/"+str(correct_real))
+    #             for j in range(len(x[0])):
+    #                 path = './correctly_labeled/'+type+"/"+str(correct_real)+"/"+ str(j) + '.jpg'
+    #                 frame = np.array(x[0][j])
+    #                 norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
+    #                 norm_frame = norm_frame.astype(np.uint8)
+    #                 norm = cv2.cvtColor(norm_frame, cv2.COLOR_BGR2RBG)
+    #                 res = cv2.imwrite(path, norm)
 
-            elif type == "FAKE" and correct_fake < 3:
-                correct_fake += 1
-                os.mkdir('correctly_labeled/'+type+"/"+str(correct_fake))
-                for j in range(len(x[0])):
-                    path = './correctly_labeled/'+type+"/"+str(correct_fake)+"/"+ str(j) + '.jpg'
-                    frame = np.array(x[0][j])
-                    # norm_frame = (255*(frame - np.min(frame))/np.ptp(frame)).astype(int)        
-                    norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
-                    norm_frame = norm_frame.astype(np.uint8)
-                    # print("Normalized!", norm_frame)
-                    # im = Image.fromarray(norm_frame)      
-                    print("Normalized!", norm_frame)
-                    norm = cv2.cvtColor(norm_frame, cv2.COLOR_BGR2RGB)
-                    res = cv2.imwrite(path, norm)
-                    # im.save(path)
-        print("Written image!", res, path)
-        print("Nums:", real_count, fake_count, correct_real, correct_fake)
-        if real_count == 3 and fake_count == 3 and correct_fake == 3 and correct_real == 3:
-            print("Got 3 for each!")
-            break        
+    #         elif type == "FAKE" and correct_fake < 3:
+    #             correct_fake += 1
+    #             os.mkdir('correctly_labeled/'+type+"/"+str(correct_fake))
+    #             for j in range(len(x[0])):
+    #                 path = './correctly_labeled/'+type+"/"+str(correct_fake)+"/"+ str(j) + '.jpg'
+    #                 frame = np.array(x[0][j])
+    #                 norm_frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype = cv2.CV_32F)
+    #                 norm_frame = norm_frame.astype(np.uint8)
+    #                 norm = cv2.cvtColor(norm_frame, cv2.COLOR_BGR2RGB)
+    #                 res = cv2.imwrite(path, norm)
+    #     if real_count == 3 and fake_count == 3 and correct_fake == 3 and correct_real == 3:
+    #         break        
 
     return acc[1]
 
