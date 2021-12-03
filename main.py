@@ -144,7 +144,7 @@ def test(model, test_generator):
                     # print("Normalized!", norm_frame)
                     # im = Image.fromarray(norm_frame)      
                     print("Normalized!", norm_frame)
-                    norm = cv2.cvtColor(norm_frame, cv2.COLOR_BGR2RBG)
+                    norm = cv2.cvtColor(norm_frame, cv2.COLOR_BGR2RGB)
                     res = cv2.imwrite(path, norm)
                     # im.save(path)
         print("Written image!", res, path)
