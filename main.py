@@ -136,31 +136,27 @@ def main():
     if args.load_checkpoint and os.path.exists(args.load_checkpoint):
         timestamp = args.load_checkpoint.split(os.sep)[-2]
     
-    # Not windows:
-    # save_dir = "./checkpoints/" 
-    # log_dir = "./logs/"
-
-    # windows:
-    save_dir = "./checkpoints/"
-    log_dir = "./logs/"
+    save_dir = os.path.join(".", "checkpoints")
+    log_dir = os.path.join(".", "logs")
     
     # specify model
     if args.type == 'CNN':
         # some hyper-parameters related to dataset are here
-        sample = [0, 2, 4, 6, 8] #[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        sample = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         total_frames = 10
         if args.phase!='test':
-            h, w = 450, 1800 
+            h, w = 700, 700 
         else:
             h, w = 2500, 2500
-        train_generator = KaggleTrainBalanceGenerator(path=os.path.join(args.dataset_dir, "train"), 
+        train_generator = KaggleTrainBalanceGenerator(path=os.path.join(args.dataset_dir, "train_face"), 
                                                       batch=args.batch_size, 
                                                       shuffle=True,
                                                       sample_frames=sample,
                                                       total_frames=total_frames,
                                                       h=h,
                                                       w=w)
-        val_generator = KaggleTrainGenerator(path=os.path.join(args.dataset_dir, "val"), 
+        val_generator = KaggleTrainGenerator(path=os.path.join(args.dataset_dir, 
+                                                               "val_face" if args.phase!='test' else "val"), 
                                              batch=args.batch_size if args.phase!='test' else 1, 
                                              shuffle=False,
                                              sample_frames=sample,
@@ -180,20 +176,21 @@ def main():
         model.summary()
     elif args.type == 'LSTM':
         # some hyper-parameters related to dataset are here
-        sample = [0, 2, 4, 6, 8] # [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        sample = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         total_frames = 10
         if args.phase!='test':
-            h, w = 450, 1800 
+            h, w = 700, 700 
         else:
             h, w = 2500, 2500
-        train_generator = KaggleTrainBalanceGenerator(path=os.path.join(args.dataset_dir, "train"), 
+        train_generator = KaggleTrainBalanceGenerator(path=os.path.join(args.dataset_dir, "train_face"), 
                                                       batch=args.batch_size, 
                                                       shuffle=True,
                                                       sample_frames=sample,
                                                       total_frames=total_frames,
                                                       h=h,
                                                       w=w)
-        val_generator = KaggleTrainGenerator(path=os.path.join(args.dataset_dir, "val"), 
+        val_generator = KaggleTrainGenerator(path=os.path.join(args.dataset_dir, 
+                                                               "val_face" if args.phase!='test' else "val"), 
                                              batch=args.batch_size if args.phase!='test' else 1, 
                                              shuffle=False,
                                              sample_frames=sample,
@@ -213,20 +210,21 @@ def main():
         model.summary()
     elif args.type == 'LSTM-F':
         # some hyper-parameters related to dataset are here
-        sample = [0, 2, 4, 6, 8] #[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        sample = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         total_frames = 10
         if args.phase!='test':
-            h, w = 450, 1800 
+            h, w = 700, 700 
         else:
             h, w = 2500, 2500
-        train_generator = KaggleTrainBalanceGenerator(path=os.path.join(args.dataset_dir, "train"), 
+        train_generator = KaggleTrainBalanceGenerator(path=os.path.join(args.dataset_dir, "train_face"), 
                                                       batch=args.batch_size, 
                                                       shuffle=True,
                                                       sample_frames=sample,
                                                       total_frames=total_frames,
                                                       h=h,
                                                       w=w)
-        val_generator = KaggleTrainGenerator(path=os.path.join(args.dataset_dir, "val"), 
+        val_generator = KaggleTrainGenerator(path=os.path.join(args.dataset_dir, 
+                                                               "val_face" if arge.phase!='test' else "val"), 
                                              batch=args.batch_size if args.phase!='test' else 1, 
                                              shuffle=False,
                                              sample_frames=sample,
@@ -277,8 +275,8 @@ def main():
     if args.phase=='train':
         train(model, train_generator, val_generator, checkpoint_path, logs_path, init_epoch)
     else:
-        # acc = test(model, val_generator)
-        # print("val: {}".format(acc))
+        acc = test(model, val_generator)
+        print("val: {}".format(acc))
         acc = test(model, test_generator)
         print("test: {}".format(acc))
 
