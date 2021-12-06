@@ -3,13 +3,15 @@ import os
 import glob
 import numpy as np 
 from PIL import Image
+import time
 
 path = './val/'
 paths = np.array(glob.glob(os.path.join(path, '*', '*', '*.jpg')))
 paths.sort()
-paths = paths.reshape(-1, 10)
+paths = paths.reshape(-1, 10) # used 5 frames for comparative time performance 
 save = "./crop/"
 
+all_times = []
 w_max, h_max = 0, 0
 for p in paths:
     xmin, ymin, xmax, ymax = float('inf'), float('inf'), -float('inf'), -float('inf')
@@ -20,7 +22,13 @@ for p in paths:
         print(f)
         image = face_recognition.load_image_file(f)
         h, w, c = image.shape
+        start_time = time.time()
         face_locations = face_recognition.face_locations(image, model='cnn')
+        end_time = time.time() 
+        time_taken = end_time - start_time
+        print(time_taken)
+        all_times.append(time_taken)
+
         if i==0:
             num = len(face_locations)
         elif num!=len(face_locations):
@@ -56,3 +64,6 @@ for p in paths:
     w_max, h_max = max(xmax-xmin, w_max), max(ymax-ymin, h_max)
     print(xmax-xmin, ymax-ymin, w_max, h_max)
     #print(xmin, ymin, xmax, ymax)
+
+print("avg time for cnn:", np.mean(np.array(all_times)))
+print(len(all_times))

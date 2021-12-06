@@ -16,11 +16,11 @@ haar_model = os.path.join(cv2_base_dir, 'data/haarcascade_frontalface_default.xm
 trained_face_data = cv2.CascadeClassifier(haar_model)
 
 # User defined settings
-BBOX_MAX_WIDTH = 600 
-BBOX_MAX_HEIGHT = 600  
-NUM_FRAMES = 10
-CROPPED_IMGS_FOLDER_NAME = '/Users/jc/Desktop/small_cropped/'
-DATA_FOLDER = './small/'
+BBOX_MAX_WIDTH = 700 
+BBOX_MAX_HEIGHT = 700  
+NUM_FRAMES = 10 # used 5 frames for comparative time performance 
+CROPPED_IMGS_FOLDER_NAME = '/Users/jc/Desktop/val_cropped_haar/'
+DATA_FOLDER = './val_face/'
 
 def get_mod_coord(coord, coord_dist, bbox_max):
     bbox_length = bbox_max - coord_dist
@@ -46,6 +46,7 @@ paths = np.array(glob.glob(os.path.join(path, '*', '*', '*.jpg')))
 paths.sort()
 paths = paths.reshape(-1, NUM_FRAMES)
 
+all_times = []
 for p in paths:
     for i, f in enumerate(p):
         # Choose an image to detect faces in
@@ -53,7 +54,11 @@ for p in paths:
     
         # Detect Faces on grayscaled image
         grayscaled_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        start_time = time.time()
         face_coordinates = trained_face_data.detectMultiScale(grayscaled_img)
+        end_time = time.time() 
+        time_taken = end_time - start_time
+        all_times.append(time_taken)
 
         # generate folder to store cropped / processed images
         curr_folder_path = f.rsplit('/', 1)[0][1:]
@@ -98,3 +103,6 @@ for p in paths:
                 num_cropped_imgs = len(cropped_imgs)
                 for img_i in range(num_cropped_imgs):
                     cv2.imwrite(new_folder_path + '/face_' + str(i) + '_' + str(img_i) + '.jpg', cropped_imgs[img_i])
+
+print("avg time for haar:", np.mean(np.array(all_times)))
+print(len(all_times))
