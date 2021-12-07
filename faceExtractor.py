@@ -26,7 +26,7 @@ for p in paths:
         face_locations = face_recognition.face_locations(image, model='cnn')
         end_time = time.time() 
         time_taken = end_time - start_time
-        print(time_taken)
+        # print(time_taken)
         all_times.append(time_taken)
 
         if i==0:
